@@ -1,0 +1,199 @@
+:root {
+  --color-brand--1: #ffb545;
+  --color-brand--2: #00c46a;
+
+  --color-dark--1: #2d3439;
+  --color-dark--2: #42484d;
+  --color-light--1: #aaa;
+  --color-light--2: #ececec;
+  --color-light--3: rgb(214, 222, 224);
+}
+
+* {
+  margin: 0;
+  border: 0;
+  box-sizing: inherit;
+}
+html {
+  font-size: 62.5%; /* use 62.5%(10px) makes it easier to use rem with other elements. */
+  box-sizing: border-box; /* width, height included padding and border */
+}
+body {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 400;
+  color: var(--color-light--2); /* text color */
+  background-color: white;
+  line-height: 1.6;
+  height: 100vh; /* height = full screen*/
+  overscroll-behavior-y: none; /* no vertical scroll hehavior */
+  padding: 20px;
+  display: flex; /* display each elements from left-> right */
+}
+/* GENERAL */
+a:link,
+a:visited {
+  color: var(--color-brand--1);
+}
+
+/* Sidebar */
+.sidebar {
+  flex-basis: 50rem; /* initiate length of flex item - this div is 500px */
+  background-color: var(--color-dark--1);
+  padding: 3rem 5rem 4rem 5rem; /* OR 30px 50px 40px 50px */
+  display: flex;
+  flex-direction: column;
+}
+.logo {
+  align-self: center;
+  height: 5.2rem;
+  margin-bottom: 4rem;
+}
+.workouts {
+  /* shorthand for all list properties: list-style-type, list-style-position, list-style-image */
+  list-style: none;
+  height: 77vh;
+  /* add a scroll bar if the content bigger than the box and dont extend the bax */
+  overflow-y: scroll;
+  overflow-x: hidden; /* if content bigger than the box, it is visible and dont extend the box */
+}
+.form {
+  background-color: var(--color-dark--2);
+  border-radius: 5px; /*  add rounded corners */
+  padding: 1.5rem 2.27rem;
+  margin-bottom: 1.75rem;
+  display: grid;
+  /* Have to define this together with display: grid; then it will diplay in grid layout */
+  grid-template-columns: 1fr 1fr;
+  /* shorthand for row-gap and column-gap / space between rows and columns within grid/flex   */
+  gap: 0.5rem 2.5rem;
+
+  /* Match height and activity boxes */
+  height: 9.25rem;
+  /* 
+  - transitions allows you to change property values smoothly, over a given duration. 
+  - transform 1ms = behavior specified in transform property will happen within 1 ms
+  */
+  transition: all 0.5s, transform 1ms;
+}
+.form_row {
+  display: flex;
+  align-items: center;
+}
+.form_label {
+  /* 
+    flex: 0 0 50%;
+    - Specify shorthand for flex-grow, flex-shrink, flex-basis.
+    - Means don't "grow" or "shrink" any more and "take up 50% space of a flex container"  
+    */
+  flex: 0 0 50%;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+.form_input {
+  width: 100%;
+  border-radius: 3px;
+  font-family: inherit;
+  font-size: 1.4rem;
+  /* border: none; */
+  background-color: var(--color-light--3);
+  transition: all 0.2s;
+  padding: 0.3rem 1.1rem;
+}
+
+.form_input:focus {
+  /* when we click on the input fields*/
+  outline: none; /* a line that is drawn around elements, OUTSIDE the borders*/
+  background-color: #fff;
+}
+
+.form_row_hidden {
+  display: none;
+}
+.form__btn {
+  display: none;
+}
+
+.workout {
+  background-color: var(--color-dark--2);
+  margin-bottom: 1.75rem;
+  padding: 1.5rem 2.25rem;
+  border-radius: 5px;
+  cursor: pointer; /*The cursor is a pointer and indicates a link*/
+
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 0.75rem 1.5rem;
+}
+.workout_running {
+  border-left: 5px solid var(--color-brand--2);
+}
+.workout_cycling {
+  border-left: 5px solid var(--color-brand--1);
+}
+
+.workout_title {
+  font-size: 1.7rem;
+  font-weight: 600;
+  grid-column: 1 / -1; /* .workout_title will start on column 1 and take all space in the row*/
+}
+
+.workout_details {
+  display: flex;
+  align-items: baseline;
+}
+
+.workout_icon {
+  font-size: 1.8rem;
+  margin-right: 0.2rem;
+  height: 0.28rem;
+}
+
+.workout_value {
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+}
+
+.workout_unit {
+  color: var(--color-light--1);
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.form.hidden {
+  transform: translateY(-30rem); /*moving up in Y-axis direction */
+  height: 0;
+  display: none;
+  padding: 0 2.25rem;
+  margin-bottom: 0;
+  opacity: 0; /*specifies the transparency of an element => opacity: 0 = invisible */
+}
+
+#map {
+  background-color: var(--color-light--1);
+  height: 100%;
+  flex: 1; /* Let all the flexible items be the same length, regardless of its content:*/
+}
+
+/* Popup width is defined in JS using options */
+.leaflet-popup .leaflet-popup-content-wrapper {
+  background-color: var(--color-dark--1);
+  color: var(--color-light--2);
+  border-radius: 5px;
+  padding-right: 0.6rem;
+}
+
+.leaflet-popup .leaflet-popup-content {
+  font-size: 1.5rem;
+}
+
+.leaflet-popup .leaflet-popup-tip {
+  background-color: var(--color-dark--1);
+}
+
+.running-popup .leaflet-popup-content-wrapper {
+  border-left: 5px solid var(--color-brand--2);
+}
+.cycling-popup .leaflet-popup-content-wrapper {
+  border-left: 5px solid var(--color-brand--1);
+}

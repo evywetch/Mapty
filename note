@@ -1,0 +1,77 @@
+Steps of making this app:
+
+===> 1. Create an App class, this object will be an object that runs the program.
+
+===> 2. Use Geolocation API to get your CURRENT POSITION
+
+if(navigator.geolocation)  // b4 use it, has to check if 'geolocation' exists
+navigator.geolocation.getCurrentPosition(function(position){
+    console.log(position);
+}, function () {
+  alert("Could not get your position.");
+});
+
+* getCurrentPosition() takes 2 callback functions; 
+    1. will be called on success
+        - it will be called with a parameter "position"
+    2. Error callback, will be call when we get an error
+
+
+===> 3. Use Leaflet to load the map
+
+ _loadMap(position) {
+    //  => get current position from "position" object
+    const { latitude } = position.coords;
+    const { longitude } = position.coords;
+    const coords = [latitude, longitude];
+
+    // => Load the map using leaflet
+
+    var map = L.map('map').setView(coords, 13);
+    // Use map's tiles in a warm style
+    L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
+
+    L.marker(coords)
+      .addTo(map)
+      .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
+      .openPopup();
+
+ ===> 4.     map.on('click', this._showForm.bind(this));
+  }
+
+
+===> 4. Make a method to pop the form when user click on anywhere on the map.
+
+_showForm(mapE) {
+    // console.log('mapE object', mapE);
+
+    // remove 'hidden class' so the form will appear
+    form.classList.remove('hidden');
+    // set the cursor at "distance" input
+    inputDistance.focus();
+  }
+
+  ===> 5. Add an event listener in the constructor to toggle between"Cadence and Elevation gain" when the user change the type of the activity. And create a method to toggle it.
+
+  ====> 6. Add an event listener in a constructor to listen to the form. When the user submits the form, these following events will happen
+        - Validate the form values.
+        - Save form data.
+        - Show mark up on the map where the user clicked.
+        - The form disappear.
+
+===> 7
+
+
+===> 8
+
+===> 9
+
+
+
+
+
+!!!!!!!!!!!!! Watch Out
+1. Don't declare PRIVATE fields in a parent class => otherwise will get an error coz the child class can't access them.

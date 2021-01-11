@@ -1,0 +1,120 @@
+<html>
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <!-- Link to leaflet library -->
+    <link rel="stylesheet" href="leaflet/leaflet.css" />
+    <script defer src="leaflet/leaflet.js"></script>
+    <!-- Link to leaflet library -->
+    <script defer src="script.js"></script>
+    <title>Mappy // Map your visits</title>
+  </head>
+  <body>
+    <!-- Sidebar on the left -->
+    <div class="sidebar">
+      <img class="logo" src="logo.png" />
+      <ul class="workouts">
+        <form class="form hidden">
+          <!-- Type -->
+          <div class="form_row">
+            <label class="form_label">Type</label>
+            <select class="form_input form_input_type">
+              <option value="running">Running</option>
+              <option value="cycling">Cycling</option>
+            </select>
+          </div>
+          <!-- Distance -->
+          <div class="form_row">
+            <label class="form_label">Distance</label>
+            <input class="form_input form_input_distance" placeholder="km" />
+          </div>
+          <!-- Distance -->
+          <div class="form_row">
+            <label class="form_label">Duration</label>
+            <input class="form_input form_input_duration" placeholder="min" />
+          </div>
+          <!-- Cadence -->
+          <div class="form_row">
+            <label class="form_label">Cadence</label>
+            <input
+              class="form_input form_input_cadence"
+              placeholder="step/min"
+            />
+          </div>
+          <!-- Elevation Gain -->
+          <div class="form_row form_row_hidden">
+            <label class="form_label">Elev Gain </label>
+            <input
+              class="form_input form_input_elevation"
+              placeholder="meters"
+            />
+          </div>
+          <button class="form__btn">OK</button>
+        </form>
+        <!-- 
+
+        <li class="workout workout_running" data-id="1234567890">
+          <h2 class="workout_title">Running on April 14</h2>
+          <div class="workout_details">
+            <span class="workout_icon">🏃‍♂️</span>
+            <span class="workout_value">5.2</span>
+            <span class="workout_unit">km</span>
+          </div>
+
+          <div class="workout_details">
+            <span class="workout_icon">🕑</span>
+            <span class="workout_value">24</span>
+            <span class="workout_unit">min</span>
+          </div>
+
+          <div class="workout_details">
+            <span class="workout_icon">⚡️</span>
+            <span class="workout_value">4.6</span>
+            <span class="workout_unit">min/km</span>
+          </div>
+
+          <div class="workout_details">
+            <span class="workout_icon">🦶</span>
+            <span class="workout_value">124</span>
+            <span class="workout_unit">spm</span>
+          </div>
+        </li>
+
+        <li class="workout workout_cycling" data-id="1234567891">
+          <h2 class="workout_title">Cycling on April 14</h2>
+          <div class="workout_details">
+            <span class="workout_icon">🚴‍♀️</span>
+            <span class="workout_value">5.2</span>
+            <span class="workout_unit">km</span>
+          </div>
+
+          <div class="workout_details">
+            <span class="workout_icon">🕑</span>
+            <span class="workout_value">24</span>
+            <span class="workout_unit">min</span>
+          </div>
+
+          <div class="workout_details">
+            <span class="workout_icon">⚡️</span>
+            <span class="workout_value">4.6</span>
+            <span class="workout_unit">km/h</span>
+          </div>
+
+          <div class="workout_details">
+            <span class="workout_icon">🏔</span>
+            <span class="workout_value">124</span>
+            <span class="workout_unit">m</span>
+          </div>
+        </li>
+
+         -->
+      </ul>
+    </div>
+
+    <!-- Map -->
+    <div id="map"></div>
+  </body>
+</html>
