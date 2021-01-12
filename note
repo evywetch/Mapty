@@ -58,11 +58,15 @@ _showForm(mapE) {
 
   ====> 6. Add an event listener in a constructor to listen to the form. When the user submits the form, these following events will happen
         - Validate the form values.
-        - Save form data.
-        - Show mark up on the map where the user clicked.
-        - The form disappear.
+        - Save form data. =>  _setLocalStorage()
+        - Show mark up on the map where the user clicked. =>  _moveToPopup(e)
+        - The form disappear. =>  _hideForm()
+        - The saved workout appear on the list. => _renderWorkout(workout)
 
-===> 7
+===> 7 When the page is loaded, render all saved workouts, render map markers of all workouts
+    - Creating method _getLocalStorage() to set all workouts to an array before the page is loaded
+    - Render all workouts from the array when the page is loaded.
+    - Render workout markers when the map is loaded. 
 
 
 ===> 8
