@@ -6,6 +6,7 @@ const inputDistance = document.querySelector('.form_input_distance');
 const inputDuration = document.querySelector('.form_input_duration');
 const inputCadence = document.querySelector('.form_input_cadence');
 const inputElevation = document.querySelector('.form_input_elevation');
+const sidebarContainer = document.querySelector('.sidebar');
 
 // Parent class
 class Workout {
@@ -81,6 +82,7 @@ class App {
   #mapEvent;
   #mapZoomLevel = 13;
   #workouts = [];
+  #markers = [];
   constructor() {
     // A popup asks a user to allow or deny his current position
     this._getPosition();
@@ -95,6 +97,8 @@ class App {
     form.addEventListener('submit', this._newWorkout.bind(this));
     // Move to the marker popup when user clicks on workout
     workoutsContainer.addEventListener('click', this._moveToPopup.bind(this));
+    // Edit Or Delete workout
+    sidebarContainer.addEventListener('click', this._editOrdelete.bind(this));
   }
 
   _getPosition() {
@@ -149,7 +153,6 @@ class App {
     inputElevation.closest('.form_row').classList.toggle('form_row_hidden');
   }
   _newWorkout(e) {
-    console.log('_newWorkout() is called after submitting form');
     // Prevent reloading the page from submitting the form.
     e.preventDefault();
     // Create a function to validate if all values are numbers
@@ -207,8 +210,9 @@ class App {
   }
 
   _renderWorkoutMarker(workout) {
-    L.marker(workout.coords)
-      .addTo(this.#map)
+    const marker = L.marker(workout.coords).addTo(this.#map);
+
+    marker
       .bindPopup(
         L.popup({
           maxWidth: 250,
@@ -222,6 +226,7 @@ class App {
         `${workout.type === 'running' ? '🏃‍♂️' : '🚴‍♀️'} ${workout.description}`
       )
       .openPopup();
+    this.#markers.push(marker);
   }
 
   _renderWorkout(workout) {
@@ -252,7 +257,7 @@ class App {
     <span class="workout_value">${workout.pace}</span>
     <span class="workout_unit">spm</span>
   </div>
-</li>`;
+`;
 
     if (workout.type === 'cycling')
       html += `<div class="workout_details">
@@ -266,7 +271,19 @@ class App {
     <span class="workout_value">${workout.speed}</span>
     <span class="workout_unit">m</span>
   </div>
-</li>`;
+`;
+
+    html += `
+      <button class="dropdown_button">
+      <i class="ion-android-more-vertical"></i>
+          <div class="dropdown_content">
+             <ul class="dropdown_list">
+                <li class="list list_edit" value="edit">Edit</li>
+                <li class="list list_delete" value="delete">Delete</li>
+              </ul>
+          </div>      
+      </button>   
+  </li>`;
 
     // Insert html as sibling after the form('afterend') the latest element will stack above
     form.insertAdjacentHTML('afterend', html);
@@ -321,6 +338,46 @@ class App {
       this._renderWorkout(work);
     });
   }
+
+  _editOrdelete(e) {
+    const optionEl = e.target.closest('.list');
+    if (!optionEl) return;
+    const itemId = optionEl.closest('.workout').dataset.id;
+    if (!optionEl) return;
+    const value = optionEl.getAttribute('value');
+    if (value === 'edit') this._editWorkout(itemId);
+    if (value === 'delete') this._deleteWorkout(itemId);
+  }
+  _deleteWorkout(itemId) {
+    // Get targeted workout element
+    const el = document.querySelector(`[data-id="${itemId}"`);
+    if (!el) return;
+    // Remove element from the list
+    el.parentNode.removeChild(el);
+    // Delete elent from workouts array
+    const workout = this.#workouts.find(work => work.id === el.dataset.id);
+
+    const index = this.#workouts.indexOf(workout);
+    this.#workouts.splice(index, 1);
+
+    // Remove element marker on the map
+    this._removeMarker(workout);
+  }
+  _removeMarker(workout) {
+    for (let i = 0; i < this.#markers.length; i++) {
+      if (
+        this.#markers[i]._latlng.lat === workout.coords[0] &&
+        this.#markers[i]._latlng.lng === workout.coords[1]
+      ) {
+        // remove marker rom the map
+        this.#map.removeLayer(this.#markers[i]);
+        // remove marker from markers array
+        this.#markers.splice(i, 1);
+      }
+    }
+  }
+
+  _editWorkout(itemId) {}
 }
 
 const app = new App();
