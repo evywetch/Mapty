@@ -1,5 +1,6 @@
 'use strict';
 const form = document.querySelector('.form');
+const inputId = document.getElementById('workout-id');
 const workoutsContainer = document.querySelector('.workouts');
 const inputType = document.querySelector('.form_input_type');
 const inputDistance = document.querySelector('.form_input_distance');
@@ -13,7 +14,7 @@ class Workout {
   coords; // [latitude, longitude]
   distance; // km
   duration; // min
-  date = new Date();
+  date;
   // Create an id, take the last 10 numbers from the Date
   id = (Date.now() + '').slice(-10);
   constructor(coords, type, distance, duration) {
@@ -21,9 +22,10 @@ class Workout {
     this.type = type;
     this.distance = distance;
     this.duration = duration;
-    this._setDescription();
+    this.date = new Date();
+    this.setDescription();
   }
-  _setDescription() {
+  setDescription() {
     const months = [
       'January',
       'February',
@@ -109,7 +111,6 @@ class App {
           alert('Could not get your position.');
         }
       );
-    console.log('getPosition() is called');
   }
 
   _loadMap(position) {
@@ -118,7 +119,6 @@ class App {
     const { longitude } = position.coords;
     const coords = [latitude, longitude];
     console.log(position);
-    console.log('_loadMap is called');
 
     // => Load the map using Leaflet
     this.#map = L.map('map').setView(coords, this.#mapZoomLevel);
@@ -131,7 +131,7 @@ class App {
     // => Pop tthe form when user clicks on the map
     this.#map.on('click', this._showForm.bind(this));
 
-    // Render the markers for all the workouts
+    // => Render the markers for all the workouts
     this.#workouts.forEach(work => {
       this._renderWorkoutMarker(work);
     });
@@ -139,8 +139,8 @@ class App {
 
   _showForm(mapE) {
     this.#mapEvent = mapE;
-    console.log('mapE object', mapE);
-
+    console.log('The mapE object', mapE);
+    console.log('the #mapEvent object', this.#mapEvent);
     // remove 'hidden class' so the form will appear
     form.classList.remove('hidden');
     // set a cursor at "distance" input
@@ -161,13 +161,34 @@ class App {
     // Create a function to validate if all numbers are positive
     const allPositive = (...inputs) => inputs.every(inp => inp > 0);
 
+    const id = inputId.value;
     const type = inputType.value;
     const distance = +inputDistance.value; // use + to covert value to number
     const duration = +inputDuration.value; // use + to covert value to number
-    //   Take coords from #mapEvent
-    const { lat, lng } = this.#mapEvent.latlng;
+    let coords = [];
     let workout;
+    let oldDate;
+    console.log('old workout id = ', id);
 
+    // ******  Seperate in 2 cases: save newly created workout or from the edited one *******
+    // Case 1: EDIT :If the form has ID, means it's an edited version, take coords & date from old object first and delete it
+    if (id) {
+      const oldWorkout = this.#workouts.find(work => work.id === id);
+      if (!oldWorkout) return;
+      // Set coords to the same as the old one
+      coords = oldWorkout.coords;
+      // Set the date to the same as the old one
+      oldDate = oldWorkout.date;
+      // Remove old workout from array
+      this._removeWorkoutFromArray(oldWorkout);
+      // Also remove the marker from map and markers array
+      this._removeMarker(oldWorkout);
+    } else {
+      // If it's a new object, take coords from #mapEvent
+      const { lat, lng } = this.#mapEvent.latlng;
+      coords = [lat, lng];
+    }
+    // Case 2: CREATE NEW WORKOUT
     // Create a workout object base on type of activity
     if (type === 'running') {
       const cadence = +inputCadence.value; // use + to covert value to number
@@ -177,7 +198,8 @@ class App {
       )
         return alert('Inputs have to be positive numbers!');
 
-      workout = new Running([lat, lng], type, distance, duration, cadence);
+      workout = new Running(coords, type, distance, duration, cadence);
+      if (id) workout.date = oldDate;
     }
 
     if (type === 'cycling') {
@@ -188,11 +210,11 @@ class App {
       )
         return alert('Inputs have to be positive numbers!');
 
-      workout = new Cycling([lat, lng], type, distance, duration, elevation);
+      workout = new Cycling(coords, type, distance, duration, elevation);
+      if (id) workout.date = oldDate;
     }
     // Store an object in an array
     this.#workouts.push(workout);
-    console.log(this.#workouts);
     // Then store it in a local storage
     this._setLocalStorage();
     // Render workout marker on the map
@@ -210,9 +232,8 @@ class App {
   }
 
   _renderWorkoutMarker(workout) {
-    const marker = L.marker(workout.coords).addTo(this.#map);
-
-    marker
+    const marker = L.marker(workout.coords)
+      .addTo(this.#map)
       .bindPopup(
         L.popup({
           maxWidth: 250,
@@ -340,28 +361,37 @@ class App {
   }
 
   _editOrdelete(e) {
+    // Get li element class = list
     const optionEl = e.target.closest('.list');
     if (!optionEl) return;
-    const itemId = optionEl.closest('.workout').dataset.id;
-    if (!optionEl) return;
+    // Get id from li class = workout
+    // const itemId = optionEl.closest('.workout').dataset.id;
+    const el = optionEl.closest('.workout');
     const value = optionEl.getAttribute('value');
-    if (value === 'edit') this._editWorkout(itemId);
-    if (value === 'delete') this._deleteWorkout(itemId);
+    if (value === 'edit') this._editWorkout(el);
+    if (value === 'delete') this._deleteWorkout(el);
   }
-  _deleteWorkout(itemId) {
+  _deleteWorkout(el) {
     // Get targeted workout element
-    const el = document.querySelector(`[data-id="${itemId}"`);
-    if (!el) return;
-    // Remove element from the list
-    el.parentNode.removeChild(el);
+    // const el = document.querySelector(`[data-id="${itemId}"`);
+    this._removeWorkoutFromList(el);
     // Delete elent from workouts array
     const workout = this.#workouts.find(work => work.id === el.dataset.id);
-
-    const index = this.#workouts.indexOf(workout);
-    this.#workouts.splice(index, 1);
+    // Remove workout from array
+    this._removeWorkoutFromArray(workout);
 
     // Remove element marker on the map
     this._removeMarker(workout);
+  }
+  _removeWorkoutFromArray(workout) {
+    const index = this.#workouts.indexOf(workout);
+    // Remove workout from an array
+    if (index > -1) this.#workouts.splice(index, 1);
+  }
+  _removeWorkoutFromList(el) {
+    if (!el) return;
+    // Remove element from the list
+    el.parentNode.removeChild(el);
   }
   _removeMarker(workout) {
     for (let i = 0; i < this.#markers.length; i++) {
@@ -369,15 +399,39 @@ class App {
         this.#markers[i]._latlng.lat === workout.coords[0] &&
         this.#markers[i]._latlng.lng === workout.coords[1]
       ) {
-        // remove marker rom the map
+        // remove marker from the map
         this.#map.removeLayer(this.#markers[i]);
         // remove marker from markers array
         this.#markers.splice(i, 1);
       }
     }
   }
-
-  _editWorkout(itemId) {}
+  _editWorkout(el) {
+    if (!el) return;
+    const workout = this.#workouts.find(work => work.id === el.dataset.id);
+    if (!workout) return;
+    // Remove workout from the list
+    this._removeWorkoutFromList(el);
+    // Set existing data on the form
+    inputId.value = workout.id;
+    inputType.value = workout.type;
+    inputDistance.value = workout.distance;
+    inputDuration.value = workout.duration;
+    if (workout.type === 'running') {
+      inputCadence.value = workout.cadence;
+    } else {
+      inputElevation.value = workout.elevation;
+    }
+    // Set focus specified workout type
+    inputType.options.namedItem(workout.type).selected = true;
+    // Set input Cadence or Elevation based on workout type
+    if (workout.type === 'cycling') {
+      inputCadence.closest('.form_row').classList.add('form_row_hidden');
+      inputElevation.closest('.form_row').classList.remove('form_row_hidden');
+    }
+    // User get a form to edit data
+    this._showForm();
+  }
 }
 
 const app = new App();

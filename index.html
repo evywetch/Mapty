@@ -25,12 +25,13 @@
       <img class="logo" src="logo.png" />
       <ul class="workouts">
         <form class="form hidden">
+          <input type="hidden" id="workout-id" name="id" />
           <!-- Type -->
           <div class="form_row">
             <label class="form_label">Type</label>
             <select class="form_input form_input_type">
-              <option value="running">Running</option>
-              <option value="cycling">Cycling</option>
+              <option id="running" value="running">Running</option>
+              <option id="cycling" value="cycling">Cycling</option>
             </select>
           </div>
           <!-- Distance -->

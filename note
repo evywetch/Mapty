@@ -69,14 +69,13 @@ _showForm(mapE) {
     - Render workout markers when the map is loaded. 
 
 
-===> 8
-
-===> 9
-
-
-
-
-
+===> 8 Added Edit & Delete functionalities; 
+      - Add Edit & Delete icon for each workout element.
+      - Add event listener for edit and delete item.
+      - Create _editOrdelete(e)
+      - Create _deleteWorkout(itemId)
+      - Create _removeMarker(workout)
+      - Create _editWorkout(itemId)
 
 
 !!!!!!!!!!!!! Watch Out
